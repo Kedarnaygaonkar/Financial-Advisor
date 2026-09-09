@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 COOKIE_SETTINGS = {
     "httponly": True,
-    "samesite": "lax",
+    "samesite": "none" if settings.ENVIRONMENT == "production" else "lax",
     "secure": settings.ENVIRONMENT == "production",
 }
 
