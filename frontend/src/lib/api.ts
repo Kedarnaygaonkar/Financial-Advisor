@@ -75,30 +75,30 @@ async function request<T>(
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const auth = {
   register: async (email: string, password: string, full_name: string, account_type = 'INDIVIDUAL') => {
-    const data: any = await request('/auth/register/', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) });
+    const data: any = await request('/auth/register', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) });
     if (data?.access_token) tokenStore.set(data.access_token);
     if (data?.refresh_token) tokenStore.setRefresh(data.refresh_token);
     return data;
   },
 
   login: async (email: string, password: string) => {
-    const data: any = await request('/auth/login/', { method: 'POST', body: JSON.stringify({ email, password }) });
+    const data: any = await request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
     if (data?.access_token) tokenStore.set(data.access_token);
     if (data?.refresh_token) tokenStore.setRefresh(data.refresh_token);
     return data;
   },
 
   logout: async () => {
-    try { await request('/auth/logout/', { method: 'POST' }); } catch {}
+    try { await request('/auth/logout', { method: 'POST' }); } catch {}
     tokenStore.clear();
   },
 
-  me: () => request('/auth/me/'),
+  me: () => request('/auth/me'),
 
   updateMe: (data: object) =>
-    request('/auth/me/', { method: 'PUT', body: JSON.stringify(data) }),
+    request('/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
 
-  refresh: () => request('/auth/refresh/', { method: 'POST' }),
+  refresh: () => request('/auth/refresh', { method: 'POST' }),
 };
 
 // ─── Individual Dashboard ─────────────────────────────────────────────────────
