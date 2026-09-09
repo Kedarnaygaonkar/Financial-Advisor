@@ -73,13 +73,13 @@ function ExpenseForm({ expense, onSave, onCancel }: {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="input-label">Category</label>
-          <select className="select" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}>
+          <select className="select" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value as any }))}>
             {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_EMOJI[c]} {c}</option>)}
           </select>
         </div>
         <div>
           <label className="input-label">Payment Method</label>
-          <select className="select" value={form.payment_method} onChange={e => setForm(p => ({ ...p, payment_method: e.target.value }))}>
+          <select className="select" value={form.payment_method} onChange={e => setForm(p => ({ ...p, payment_method: e.target.value as any }))}>
             {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
