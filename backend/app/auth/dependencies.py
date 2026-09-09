@@ -11,13 +11,26 @@ async def get_current_user(
     access_token: Optional[str] = Cookie(default=None),
     db=Depends(get_db),
 ) -> dict:
-    """Dependency: extract and validate JWT from Authorization header or httpOnly cookie → return user dict."""
-    # Prefer Authorization: Bearer <token> header (works across domains)
+    """Extract and validate JWT from:
+    1. X-Access-Token custom header (frontend localStorage → Vercel proxy)
+    2. Authorization: Bearer header
+    3. httpOnly cookie (fallback)
+    """
     token = None
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header[7:]
-    elif access_token:
+
+    # 1. Custom header (most reliable through Vercel proxy)
+    x_token = request.headers.get("X-Access-Token", "")
+    if x_token:
+        token = x_token
+
+    # 2. Authorization: Bearer header
+    if not token:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+
+    # 3. httpOnly cookie fallback
+    if not token and access_token:
         token = access_token
 
     if not token:

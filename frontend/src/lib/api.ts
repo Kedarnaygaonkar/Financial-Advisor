@@ -45,7 +45,7 @@ async function request<T>(
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['X-Access-Token'] = token;
   }
 
   const res = await fetch(url, {
@@ -205,7 +205,7 @@ export const ai = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(token ? { 'X-Access-Token': token } : {}),
       },
       body: JSON.stringify({ content }),
     });
