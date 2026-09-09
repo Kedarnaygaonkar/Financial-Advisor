@@ -1,0 +1,256 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: 99 102 241;
+    --color-primary-light: 129 140 248;
+    --color-accent: 139 92 246;
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-danger: 239 68 68;
+    --color-surface: 15 23 42;
+    --color-surface-2: 30 41 59;
+    --color-surface-3: 51 65 85;
+    --color-border: 51 65 85;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: rgb(2, 6, 23);
+    color: rgb(248, 250, 252);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(15, 23, 42);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(71, 85, 105);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(99, 102, 241);
+  }
+}
+
+@layer components {
+  /* ─── Cards ─────────────────────────────────────────── */
+  .card {
+    @apply bg-slate-900 border border-slate-800 rounded-2xl p-6;
+  }
+
+  .card-sm {
+    @apply bg-slate-900 border border-slate-800 rounded-xl p-4;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/5;
+  }
+
+  /* ─── Metric Cards ───────────────────────────────────── */
+  .metric-card {
+    @apply card-hover flex flex-col gap-2;
+  }
+
+  .metric-label {
+    @apply text-xs font-medium text-slate-400 uppercase tracking-wider;
+  }
+
+  .metric-value {
+    @apply text-2xl font-bold text-white;
+  }
+
+  .metric-change-positive {
+    @apply text-xs font-medium text-emerald-400 flex items-center gap-1;
+  }
+
+  .metric-change-negative {
+    @apply text-xs font-medium text-red-400 flex items-center gap-1;
+  }
+
+  /* ─── Buttons ────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm transition-all duration-200 active:scale-95 border border-slate-700;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium text-sm transition-all duration-200 border border-red-500/20;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 font-medium text-sm transition-all duration-200;
+  }
+
+  /* ─── Form Inputs ────────────────────────────────────── */
+  .input {
+    @apply w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-200 text-sm;
+  }
+
+  .input-label {
+    @apply block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider;
+  }
+
+  .select {
+    @apply input cursor-pointer appearance-none;
+  }
+
+  /* ─── Badges ─────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-500/10 text-amber-400 border border-amber-500/20;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-500/10 text-red-400 border border-red-500/20;
+  }
+
+  .badge-info {
+    @apply badge bg-indigo-500/10 text-indigo-400 border border-indigo-500/20;
+  }
+
+  .badge-neutral {
+    @apply badge bg-slate-700/50 text-slate-400 border border-slate-700;
+  }
+
+  /* ─── Progress Bar ───────────────────────────────────── */
+  .progress-bar {
+    @apply h-2 bg-slate-800 rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-700;
+  }
+
+  /* ─── Tables ─────────────────────────────────────────── */
+  .table-container {
+    @apply overflow-x-auto rounded-xl border border-slate-800;
+  }
+
+  .table {
+    @apply w-full text-sm;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider bg-slate-900/80 border-b border-slate-800;
+  }
+
+  .table td {
+    @apply px-4 py-3 text-slate-300 border-b border-slate-800/50;
+  }
+
+  .table tbody tr {
+    @apply hover:bg-slate-800/30 transition-colors;
+  }
+
+  /* ─── Sidebar Nav ────────────────────────────────────── */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/70 transition-all duration-200 text-sm font-medium cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-indigo-600/20 text-indigo-300 border border-indigo-500/20;
+  }
+
+  .nav-section-label {
+    @apply text-[10px] font-semibold text-slate-600 uppercase tracking-widest px-3 py-1 mt-4 mb-1;
+  }
+
+  /* ─── Empty State ────────────────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 px-4 text-center;
+  }
+
+  .empty-icon {
+    @apply w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center text-3xl mb-4;
+  }
+
+  /* ─── Glow Effects ───────────────────────────────────── */
+  .glow-indigo {
+    box-shadow: 0 0 60px -15px rgba(99, 102, 241, 0.4);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 60px -15px rgba(16, 185, 129, 0.4);
+  }
+
+  /* ─── Skeleton ───────────────────────────────────────── */
+  .skeleton {
+    @apply animate-pulse bg-slate-800 rounded-xl;
+  }
+
+  /* ─── Coming Soon ────────────────────────────────────── */
+  .coming-soon-module {
+    @apply card opacity-60 flex items-center gap-3;
+  }
+
+  /* ─── Gradient Text ──────────────────────────────────── */
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent;
+  }
+}
+
+/* ─── Chart Overrides ────────────────────────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgb(51, 65, 85) !important;
+  stroke-opacity: 0.5 !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: rgb(15, 23, 42) !important;
+  border: 1px solid rgb(51, 65, 85) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+.recharts-legend-item-text {
+  color: rgb(148, 163, 184) !important;
+  font-size: 12px !important;
+}
+
+.recharts-text {
+  fill: rgb(148, 163, 184) !important;
+  font-size: 11px !important;
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
