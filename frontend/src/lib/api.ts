@@ -1,5 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-const API_V1 = `${API_BASE}/api/v1`;
+// API requests now go through the Next.js rewrite proxy configured in next.config.ts
+// This bypasses Safari/Chrome third-party cookie restrictions.
+const API_V1 = '/api/v1';
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {
