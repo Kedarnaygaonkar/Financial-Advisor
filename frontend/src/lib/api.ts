@@ -45,19 +45,19 @@ async function request<T>(
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const auth = {
   register: (email: string, password: string, full_name: string, account_type = 'INDIVIDUAL') =>
-    request('/auth/register', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) }),
+    request('/auth/register/', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) }),
 
   login: (email: string, password: string) =>
-    request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+    request('/auth/login/', { method: 'POST', body: JSON.stringify({ email, password }) }),
 
-  logout: () => request('/auth/logout', { method: 'POST' }),
+  logout: () => request('/auth/logout/', { method: 'POST' }),
 
-  me: () => request('/auth/me'),
+  me: () => request('/auth/me/'),
 
   updateMe: (data: object) =>
-    request('/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
+    request('/auth/me/', { method: 'PUT', body: JSON.stringify(data) }),
 
-  refresh: () => request('/auth/refresh', { method: 'POST' }),
+  refresh: () => request('/auth/refresh/', { method: 'POST' }),
 };
 
 // ─── Individual Dashboard ─────────────────────────────────────────────────────
@@ -69,9 +69,9 @@ export const dashboard = {
 export const income = {
   list: () => request('/individual/income/'),
   create: (data: object) => request('/individual/income/', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: object) => request(`/individual/income/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => request(`/individual/income/${id}`, { method: 'DELETE' }),
-  summary: () => request('/individual/income/summary'),
+  update: (id: string, data: object) => request(`/individual/income/${id}/`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => request(`/individual/income/${id}/`, { method: 'DELETE' }),
+  summary: () => request('/individual/income/summary/'),
 };
 
 // ─── Expenses ─────────────────────────────────────────────────────────────────
@@ -81,63 +81,63 @@ export const expenses = {
     return request(`/individual/expenses/${qs}`);
   },
   create: (data: object) => request('/individual/expenses/', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: object) => request(`/individual/expenses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => request(`/individual/expenses/${id}`, { method: 'DELETE' }),
-  classify: (text: string) => request('/individual/expenses/classify', { method: 'POST', body: JSON.stringify({ text }) }),
-  analytics: (months = 6) => request(`/individual/expenses/analytics?months=${months}`),
-  anomalies: () => request('/individual/expenses/anomalies'),
+  update: (id: string, data: object) => request(`/individual/expenses/${id}/`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => request(`/individual/expenses/${id}/`, { method: 'DELETE' }),
+  classify: (text: string) => request('/individual/expenses/classify/', { method: 'POST', body: JSON.stringify({ text }) }),
+  analytics: (months = 6) => request(`/individual/expenses/analytics/?months=${months}`),
+  anomalies: () => request('/individual/expenses/anomalies/'),
 };
 
 // ─── Investments ──────────────────────────────────────────────────────────────
 export const investments = {
-  portfolio: () => request('/individual/investments/portfolio'),
-  holdings: () => request('/individual/investments/holdings'),
-  addHolding: (data: object) => request('/individual/investments/holdings', { method: 'POST', body: JSON.stringify(data) }),
-  updateHolding: (id: string, data: object) => request(`/individual/investments/holdings/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteHolding: (id: string) => request(`/individual/investments/holdings/${id}`, { method: 'DELETE' }),
-  liquidityInfo: () => request('/individual/investments/liquidity-info'),
+  portfolio: () => request('/individual/investments/portfolio/'),
+  holdings: () => request('/individual/investments/holdings/'),
+  addHolding: (data: object) => request('/individual/investments/holdings/', { method: 'POST', body: JSON.stringify(data) }),
+  updateHolding: (id: string, data: object) => request(`/individual/investments/holdings/${id}/`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteHolding: (id: string) => request(`/individual/investments/holdings/${id}/`, { method: 'DELETE' }),
+  liquidityInfo: () => request('/individual/investments/liquidity-info/'),
 };
 
 // ─── Credit ───────────────────────────────────────────────────────────────────
 export const credit = {
-  profile: () => request('/individual/credit/profile'),
-  update: (data: object) => request('/individual/credit/profile', { method: 'PUT', body: JSON.stringify(data) }),
-  analyze: (data: object) => request('/individual/credit/analyze', { method: 'POST', body: JSON.stringify(data) }),
+  profile: () => request('/individual/credit/profile/'),
+  update: (data: object) => request('/individual/credit/profile/', { method: 'PUT', body: JSON.stringify(data) }),
+  analyze: (data: object) => request('/individual/credit/analyze/', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ─── Tax ─────────────────────────────────────────────────────────────────────
 export const tax = {
-  profile: () => request('/individual/tax/profile'),
-  updateProfile: (data: object) => request('/individual/tax/profile', { method: 'PUT', body: JSON.stringify(data) }),
-  calculate: (data: object) => request('/individual/tax/calculate', { method: 'POST', body: JSON.stringify(data) }),
+  profile: () => request('/individual/tax/profile/'),
+  updateProfile: (data: object) => request('/individual/tax/profile/', { method: 'PUT', body: JSON.stringify(data) }),
+  calculate: (data: object) => request('/individual/tax/calculate/', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ─── Goals ───────────────────────────────────────────────────────────────────
 export const goals = {
   list: () => request('/individual/goals/'),
   create: (data: object) => request('/individual/goals/', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: object) => request(`/individual/goals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => request(`/individual/goals/${id}`, { method: 'DELETE' }),
-  projection: (id: string) => request(`/individual/goals/${id}/projection`),
+  update: (id: string, data: object) => request(`/individual/goals/${id}/`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => request(`/individual/goals/${id}/`, { method: 'DELETE' }),
+  projection: (id: string) => request(`/individual/goals/${id}/projection/`),
 };
 
 // ─── Retirement ───────────────────────────────────────────────────────────────
 export const retirement = {
-  plan: () => request('/individual/retirement/plan'),
-  calculate: (data: object) => request('/individual/retirement/calculate', { method: 'POST', body: JSON.stringify(data) }),
+  plan: () => request('/individual/retirement/plan/'),
+  calculate: (data: object) => request('/individual/retirement/calculate/', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ─── Financial Health ─────────────────────────────────────────────────────────
 export const financialHealth = {
-  score: () => request('/individual/financial-health/score'),
-  history: () => request('/individual/financial-health/history'),
+  score: () => request('/individual/financial-health/score/'),
+  history: () => request('/individual/financial-health/history/'),
 };
 
 // ─── AI ───────────────────────────────────────────────────────────────────────
 export const ai = {
-  conversations: () => request('/individual/ai/conversations'),
-  createConversation: () => request('/individual/ai/conversations', { method: 'POST' }),
-  messages: (conversationId: string) => request(`/individual/ai/conversations/${conversationId}/messages`),
+  conversations: () => request('/individual/ai/conversations/'),
+  createConversation: () => request('/individual/ai/conversations/', { method: 'POST' }),
+  messages: (conversationId: string) => request(`/individual/ai/conversations/${conversationId}/messages/`),
 
   sendMessage: async (conversationId: string, content: string, onChunk: (chunk: string) => void): Promise<void> => {
     const res = await fetch(`${API_V1}/individual/ai/conversations/${conversationId}/messages`, {
@@ -162,12 +162,12 @@ export const ai = {
 
 // ─── Business ─────────────────────────────────────────────────────────────────
 export const business = {
-  dashboard: () => request('/business/dashboard'),
-  profile: () => request('/business/profile'),
-  customers: () => request('/business/customers'),
-  vendors: () => request('/business/vendors'),
-  invoices: () => request('/business/invoices'),
-  reports: () => request('/business/reports/summary'),
+  dashboard: () => request('/business/dashboard/'),
+  profile: () => request('/business/profile/'),
+  customers: () => request('/business/customers/'),
+  vendors: () => request('/business/vendors/'),
+  invoices: () => request('/business/invoices/'),
+  reports: () => request('/business/reports/summary/'),
 };
 
 export { ApiError };
