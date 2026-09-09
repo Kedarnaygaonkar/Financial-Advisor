@@ -482,7 +482,7 @@ The database is MongoDB Atlas. For local development, ensure:
 
 ## 👨‍💻 Team
 
-- **Kedar Naygaonkar** — Project Lead, Full-stack Development
+- **Kedar Naygaonkar** —  Full-stack Development
 - *Add your teammates here*
 
 ---
