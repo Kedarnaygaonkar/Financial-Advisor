@@ -7,13 +7,17 @@ db: motor.motor_asyncio.AsyncIOMotorDatabase = None
 
 async def connect_to_mongodb():
     global client, db
-    client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
-    db = client[settings.MONGODB_DB_NAME]
-    # Verify connection
-    await client.admin.command("ping")
-    print(f"✅ Connected to MongoDB Atlas: {settings.MONGODB_DB_NAME}")
-    # Create indexes
-    await create_indexes()
+    try:
+        client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+        db = client[settings.MONGODB_DB_NAME]
+        
+        # Ping to verify connection
+        await client.admin.command('ping')
+        print(f"Connected to MongoDB Atlas: {settings.MONGODB_DB_NAME}")
+        # Create indexes
+        await create_indexes()
+    except Exception as e:
+        print(f"Failed to connect to MongoDB: {e}")
 
 
 async def close_mongodb_connection():

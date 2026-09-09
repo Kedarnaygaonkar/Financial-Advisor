@@ -93,8 +93,26 @@ async def get_retirement_plan(
     plan = await db.retirement_plans.find_one({"user_id": current_user["_id"]})
     if not plan:
         return {"exists": False, "message": "No retirement plan found. Create one to get started."}
+    
     plan["_id"] = str(plan["_id"])
-    return {**plan, "exists": True}
+    
+    # Ensure missing fields have defaults so calculation works
+    req_data = {
+        "current_age": plan.get("current_age", 30),
+        "retirement_age": plan.get("retirement_age", 60),
+        "life_expectancy": plan.get("life_expectancy", 85),
+        "current_monthly_income": plan.get("current_monthly_income", 0),
+        "current_monthly_expenses": plan.get("current_monthly_expenses", 0),
+        "current_investments": plan.get("current_investments", 0),
+        "inflation_rate": plan.get("inflation_rate", 6.0),
+        "expected_return": plan.get("expected_return", 12.0),
+        "post_retirement_return": plan.get("post_retirement_return", 7.0),
+    }
+    
+    req = RetirementRequest(**req_data)
+    result = calculate_retirement(req)
+    
+    return {**plan, **req_data, **result, "exists": True}
 
 
 @router.post("/calculate")
@@ -105,18 +123,20 @@ async def calculate_retirement_plan(
 ):
     result = calculate_retirement(request)
 
-    # Save plan
+    # Save all raw inputs so they can be re-loaded
     await db.retirement_plans.update_one(
         {"user_id": current_user["_id"]},
         {"$set": {
             "user_id": current_user["_id"],
             "current_age": request.current_age,
             "retirement_age": request.retirement_age,
+            "life_expectancy": request.life_expectancy,
             "current_monthly_income": request.current_monthly_income,
             "current_monthly_expenses": request.current_monthly_expenses,
             "current_investments": request.current_investments,
             "inflation_rate": request.inflation_rate,
             "expected_return": request.expected_return,
+            "post_retirement_return": request.post_retirement_return,
             "computed_corpus_required": result["corpus_required"],
             "computed_corpus_projected": result["corpus_projected"],
             "computed_monthly_investment": result["required_monthly_investment"],
@@ -125,4 +145,4 @@ async def calculate_retirement_plan(
         upsert=True,
     )
 
-    return result
+    return {**request.dict(), **result, "exists": True}

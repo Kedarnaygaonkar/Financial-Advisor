@@ -181,44 +181,62 @@ async def send_message(
             full_response = ""
 
             # Process function calls
-            while response.candidates[0].content.parts:
-                part = response.candidates[0].content.parts[0]
+            function_calls_count = 0
+            MAX_CALLS = 5
+            
+            while function_calls_count < MAX_CALLS:
+                has_func = False
+                if response.candidates and response.candidates[0].content.parts:
+                    part = response.candidates[0].content.parts[0]
+                    # In python protobuf, function_call.name is truthy if populated
+                    if hasattr(part, "function_call") and part.function_call and getattr(part.function_call, "name", ""):
+                        has_func = True
+                        fn_name = part.function_call.name
+                        fn_args = dict(part.function_call.args) if part.function_call.args else {}
 
-                if hasattr(part, "function_call") and part.function_call.name:
-                    fn_name = part.function_call.name
-                    fn_args = dict(part.function_call.args) if part.function_call.args else {}
+                        # Add user_id to tool calls
+                        fn_args["user_id"] = current_user["_id"]
 
-                    # Add user_id to tool calls
-                    fn_args["user_id"] = current_user["_id"]
+                        # Execute tool
+                        tool_fn = TOOL_FUNCTIONS.get(fn_name)
+                        if tool_fn:
+                            try:
+                                tool_result = await tool_fn(**fn_args)
+                            except Exception as e:
+                                tool_result = {"error": str(e)}
+                        else:
+                            tool_result = {"error": f"Unknown tool: {fn_name}"}
 
-                    # Execute tool
-                    tool_fn = TOOL_FUNCTIONS.get(fn_name)
-                    if tool_fn:
-                        try:
-                            tool_result = await tool_fn(**fn_args)
-                        except Exception as e:
-                            tool_result = {"error": str(e)}
-                    else:
-                        tool_result = {"error": f"Unknown tool: {fn_name}"}
-
-                    # Send tool result back
-                    response = chat.send_message(
-                        genai.protos.Part(
-                            function_response=genai.protos.FunctionResponse(
-                                name=fn_name,
-                                response={"result": json.dumps(tool_result, default=str)},
+                        # Send tool result back
+                        response = chat.send_message(
+                            genai.protos.Part(
+                                function_response=genai.protos.FunctionResponse(
+                                    name=fn_name,
+                                    response={"result": json.dumps(tool_result, default=str)[:3000]},
+                                )
                             )
                         )
-                    )
-                else:
-                    # Text response
-                    if hasattr(part, "text"):
-                        full_response = part.text
+                        function_calls_count += 1
+                        
+                if not has_func:
                     break
 
+            try:
+                full_response = response.text
+            except Exception:
+                # If response.text fails, fallback to extracting it manually
+                if response.candidates and response.candidates[0].content.parts:
+                    full_response = response.candidates[0].content.parts[0].text
+                else:
+                    full_response = ""
+
+            if not full_response:
+                full_response = "I processed your request successfully but have no further information."
+
             # Stream the response text
-            for chunk in full_response:
-                yield chunk
+            chunk_size = 5
+            for i in range(0, len(full_response), chunk_size):
+                yield full_response[i:i+chunk_size]
 
             # Save assistant response
             await db.ai_messages.insert_one({

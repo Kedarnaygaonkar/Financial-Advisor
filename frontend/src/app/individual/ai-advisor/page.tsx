@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ai as aiApi } from '@/lib/api';
 import type { AIConversation, AIMessage } from '@/types';
 import { Send, Plus, Bot, User, Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const QUICK_QUESTIONS = [
   'Why did my expenses increase this month?',
@@ -21,8 +23,12 @@ function MessageBubble({ msg }: { msg: AIMessage }) {
       <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-sm ${isUser ? 'bg-indigo-600' : 'bg-slate-700'}`}>
         {isUser ? <User size={16} /> : <Bot size={16} />}
       </div>
-      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-slate-800 text-slate-200 rounded-tl-sm'}`}>
-        {msg.content}
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser ? 'bg-indigo-600 text-white rounded-tr-sm whitespace-pre-wrap' : 'bg-slate-800 text-slate-200 rounded-tl-sm prose prose-invert prose-sm prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 max-w-none'}`}>
+        {isUser ? (
+          msg.content
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+        )}
       </div>
     </div>
   );
@@ -206,8 +212,12 @@ export default function AiAdvisorPage() {
               <div className="shrink-0 w-8 h-8 rounded-xl bg-slate-700 flex items-center justify-center">
                 <Bot size={16} />
               </div>
-              <div className="max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-3 bg-slate-800 text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">
-                {streamingText || <Loader2 size={16} className="animate-spin text-indigo-400" />}
+              <div className="max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-3 bg-slate-800 text-slate-200 text-sm leading-relaxed prose prose-invert prose-sm prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 max-w-none">
+                {streamingText ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingText}</ReactMarkdown>
+                ) : (
+                  <Loader2 size={16} className="animate-spin text-indigo-400" />
+                )}
               </div>
             </div>
           )}
