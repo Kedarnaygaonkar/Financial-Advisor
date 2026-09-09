@@ -39,6 +39,7 @@ app = FastAPI(
     description="AI-powered Financial Advisor — Individual & Business",
     version="1.0.0",
     lifespan=lifespan,
+    redirect_slashes=False,
     docs_url="/docs" if settings.ENVIRONMENT == "development" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
 )

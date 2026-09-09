@@ -16,7 +16,8 @@ COOKIE_SETTINGS = {
 }
 
 
-@router.post("/register", response_model=AuthResponse)
+@router.post("/register")
+@router.post("/register/")
 async def register(request: RegisterRequest, response: Response):
     user = await service.register_user(
         email=request.email,
@@ -44,7 +45,8 @@ async def register(request: RegisterRequest, response: Response):
     )
 
 
-@router.post("/login", response_model=AuthResponse)
+@router.post("/login")
+@router.post("/login/")
 async def login(request: LoginRequest, response: Response):
     user = await service.authenticate_user(request.email, request.password)
     if not user:
@@ -71,6 +73,7 @@ async def login(request: LoginRequest, response: Response):
 
 
 @router.post("/logout")
+@router.post("/logout/")
 async def logout(response: Response):
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
@@ -78,6 +81,7 @@ async def logout(response: Response):
 
 
 @router.post("/refresh")
+@router.post("/refresh/")
 async def refresh_token(response: Response, refresh_token: Optional[str] = Cookie(default=None)):
     if not refresh_token:
         raise unauthorized()
@@ -96,7 +100,8 @@ async def refresh_token(response: Response, refresh_token: Optional[str] = Cooki
     return {"message": "Token refreshed"}
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/me")
+@router.get("/me/")
 async def get_me(current_user: dict = Depends(get_current_user)):
     return UserResponse(
         id=current_user["_id"],
@@ -108,6 +113,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 
 @router.put("/me")
+@router.put("/me/")
 async def update_me(
     request: UpdateProfileRequest,
     current_user: dict = Depends(get_current_user),

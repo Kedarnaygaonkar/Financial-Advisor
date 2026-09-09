@@ -54,10 +54,20 @@ async function request<T>(
   });
 
   if (!res.ok) {
-    let detail = `Request failed: ${res.status}`;
+    let detail: string = `Request failed: ${res.status}`;
     try {
       const data = await res.json();
-      detail = data.detail || detail;
+      if (typeof data.detail === 'string') {
+        detail = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        // Pydantic validation errors
+        detail = data.detail.map((e: any) => {
+          const field = e.loc?.slice(1).join('.') || '';
+          return field ? `${field}: ${e.msg}` : e.msg;
+        }).join('; ');
+      } else if (data.detail) {
+        detail = JSON.stringify(data.detail);
+      }
     } catch {}
     throw new ApiError(res.status, detail);
   }

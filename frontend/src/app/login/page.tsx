@@ -34,7 +34,19 @@ export default function LoginPage() {
       }
       router.push('/individual/dashboard');
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
+      if (err instanceof ApiError) {
+        // Pydantic validation errors come back as an array
+        const msg = err.message;
+        if (Array.isArray(msg)) {
+          setError((msg as any[]).map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', '));
+        } else if (typeof msg === 'object') {
+          setError(JSON.stringify(msg));
+        } else {
+          setError(String(msg));
+        }
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
