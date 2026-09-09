@@ -39,6 +39,8 @@ async def register(request: RegisterRequest, response: Response):
             created_at=user["created_at"],
         ),
         message="Account created successfully",
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 
@@ -63,6 +65,8 @@ async def login(request: LoginRequest, response: Response):
             created_at=user["created_at"],
         ),
         message="Login successful",
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 

@@ -47,3 +47,5 @@ class UserResponse(BaseModel):
 class AuthResponse(BaseModel):
     user: UserResponse
     message: str
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None

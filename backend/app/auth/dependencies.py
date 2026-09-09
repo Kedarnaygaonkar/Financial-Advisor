@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import Cookie, Depends
+from fastapi import Cookie, Depends, Request
 from bson import ObjectId
 from app.database import get_db
 from app.utils.security import decode_token
@@ -7,14 +7,23 @@ from app.utils.exceptions import unauthorized
 
 
 async def get_current_user(
+    request: Request,
     access_token: Optional[str] = Cookie(default=None),
     db=Depends(get_db),
 ) -> dict:
-    """Dependency: extract and validate JWT from httpOnly cookie → return user dict."""
-    if not access_token:
+    """Dependency: extract and validate JWT from Authorization header or httpOnly cookie → return user dict."""
+    # Prefer Authorization: Bearer <token> header (works across domains)
+    token = None
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+    elif access_token:
+        token = access_token
+
+    if not token:
         raise unauthorized()
 
-    payload = decode_token(access_token)
+    payload = decode_token(token)
     if not payload or payload.get("type") != "access":
         raise unauthorized()
 
@@ -28,6 +37,7 @@ async def get_current_user(
 
     user["_id"] = str(user["_id"])
     return user
+
 
 
 async def get_current_individual_user(

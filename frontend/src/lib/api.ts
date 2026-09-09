@@ -1,26 +1,56 @@
-// API requests now go through the Next.js rewrite proxy configured in next.config.ts
-// This bypasses Safari/Chrome third-party cookie restrictions.
+// API requests go through the Next.js rewrite proxy configured in next.config.ts
 const API_V1 = '/api/v1';
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
+// ─── Token Storage ────────────────────────────────────────────────────────────
+export const tokenStore = {
+  get: (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('access_token');
+  },
+  set: (token: string) => {
+    if (typeof window !== 'undefined') localStorage.setItem('access_token', token);
+  },
+  clear: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    }
+  },
+  setRefresh: (token: string) => {
+    if (typeof window !== 'undefined') localStorage.setItem('refresh_token', token);
+  },
+  getRefresh: (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('refresh_token');
+  },
+};
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_V1}${path}`;
+  const token = tokenStore.get();
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(url, {
-    credentials: 'include', // send httpOnly cookies
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
     ...options,
+    headers,
   });
 
   if (!res.ok) {
@@ -44,13 +74,24 @@ async function request<T>(
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const auth = {
-  register: (email: string, password: string, full_name: string, account_type = 'INDIVIDUAL') =>
-    request('/auth/register/', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) }),
+  register: async (email: string, password: string, full_name: string, account_type = 'INDIVIDUAL') => {
+    const data: any = await request('/auth/register/', { method: 'POST', body: JSON.stringify({ email, password, full_name, account_type }) });
+    if (data?.access_token) tokenStore.set(data.access_token);
+    if (data?.refresh_token) tokenStore.setRefresh(data.refresh_token);
+    return data;
+  },
 
-  login: (email: string, password: string) =>
-    request('/auth/login/', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  login: async (email: string, password: string) => {
+    const data: any = await request('/auth/login/', { method: 'POST', body: JSON.stringify({ email, password }) });
+    if (data?.access_token) tokenStore.set(data.access_token);
+    if (data?.refresh_token) tokenStore.setRefresh(data.refresh_token);
+    return data;
+  },
 
-  logout: () => request('/auth/logout/', { method: 'POST' }),
+  logout: async () => {
+    try { await request('/auth/logout/', { method: 'POST' }); } catch {}
+    tokenStore.clear();
+  },
 
   me: () => request('/auth/me/'),
 
@@ -140,10 +181,13 @@ export const ai = {
   messages: (conversationId: string) => request(`/individual/ai/conversations/${conversationId}/messages/`),
 
   sendMessage: async (conversationId: string, content: string, onChunk: (chunk: string) => void): Promise<void> => {
-    const res = await fetch(`${API_V1}/individual/ai/conversations/${conversationId}/messages`, {
+    const token = tokenStore.get();
+    const res = await fetch(`${API_V1}/individual/ai/conversations/${conversationId}/messages/`, {
       method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ content }),
     });
 
@@ -169,5 +213,3 @@ export const business = {
   invoices: () => request('/business/invoices/'),
   reports: () => request('/business/reports/summary/'),
 };
-
-export { ApiError };
